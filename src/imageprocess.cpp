@@ -136,86 +136,43 @@ int * Imageprocess::GetHistGram(const unsigned char * gray_img) {
 	return m_pHistGram;
 }
 
-int Imageprocess::GetOSTUThreshold(int * HistGram)
-    {
-		int X, Y, Amount = 0;
-        int PixelBack = 0, PixelFore = 0, PixelIntegralBack = 0, PixelIntegralFore = 0, PixelIntegral = 0;
-        double OmegaBack, OmegaFore, MicroBack, MicroFore, SigmaB, Sigma;              // 类间方差;
-        int MinValue, MaxValue;
-        int Threshold = 0;
-
-        for (MinValue = 0; MinValue < 256 && HistGram[MinValue] == 0; MinValue++) ;
-        for (MaxValue = 255; MaxValue > MinValue && HistGram[MinValue] == 0; MaxValue--) ;
-        if (MaxValue == MinValue) return MaxValue;          // 图像中只有一个颜色             
-        if (MinValue + 1 == MaxValue) return MinValue;      // 图像中只有二个颜色
-
-        for (Y = MinValue; Y <= MaxValue; Y++) Amount += HistGram[Y];        //  像素总数
-
-        PixelIntegral = 0;
-        for (Y = MinValue; Y <= MaxValue; Y++) PixelIntegral += HistGram[Y] * Y;
-        SigmaB = -1;
-        for (Y = MinValue; Y < MaxValue; Y++)
-        {
-            PixelBack = PixelBack + HistGram[Y];
-            PixelFore = Amount - PixelBack;
-            OmegaBack = (double)PixelBack / Amount;
-            OmegaFore = (double)PixelFore / Amount;
-            PixelIntegralBack += HistGram[Y] * Y;
-            PixelIntegralFore = PixelIntegral - PixelIntegralBack;
-            MicroBack = (double)PixelIntegralBack / PixelBack;
-            MicroFore = (double)PixelIntegralFore / PixelFore;
-            Sigma = OmegaBack * OmegaFore * (MicroBack - MicroFore) * (MicroBack - MicroFore);
-            if (Sigma > SigmaB)
-            {
-                SigmaB = Sigma;
-                Threshold = Y;
-            }
-        }
-
-        return Threshold;
-    }
-/*
-int Imageprocess::GetOSTUThreshold(const int * HistGram) {
+int Imageprocess::GetOSTUThreshold(int * HistGram) {
 	int X, Y, Amount = 0;
-	int PixelBack = 0, PixelFore = 0, PixelIntegralBack = 0, PixelIntegralFore = 0, PixelIntegral = 0;
-	double OmegaBack, OmegaFore, MicroBack, MicroFore, SigmaB, Sigma;              // 类间方差;
-	int MinValue, MaxValue;
-	int Threshold = 0;
+    int PixelBack = 0, PixelFore = 0, PixelIntegralBack = 0, PixelIntegralFore = 0, PixelIntegral = 0;
+    double OmegaBack, OmegaFore, MicroBack, MicroFore, SigmaB, Sigma;              // 类间方差;
+    int MinValue, MaxValue;
+    int Threshold = 0;
 
-	for (MinValue = 0; MinValue < 256 && HistGram[MinValue] == 0; MinValue++) 
-		;
-	for (MaxValue = 255; MaxValue > MinValue && HistGram[MinValue] == 0; MaxValue--) 
-		;
- 	if (MaxValue == MinValue) { return MaxValue; }          // 图像中只有一个颜色             
-	if (MinValue + 1 == MaxValue) { return MinValue; }     // 图像中只有二个颜色
+    for (MinValue = 0; MinValue < 256 && HistGram[MinValue] == 0; MinValue++) ;
+    for (MaxValue = 255; MaxValue > MinValue && HistGram[MinValue] == 0; MaxValue--) ;
+    if (MaxValue == MinValue) return MaxValue;          // 图像中只有一个颜色             
+    if (MinValue + 1 == MaxValue) return MinValue;      // 图像中只有二个颜色
 
-	for (Y = MinValue; Y <= MaxValue; Y++) Amount += HistGram[Y];        //  像素总数
+    for (Y = MinValue; Y <= MaxValue; Y++) Amount += HistGram[Y];        //  像素总数
 
-	PixelIntegral = 0;
-	for (Y = MinValue; Y <= MaxValue; Y++) PixelIntegral += HistGram[Y] * Y;
-	SigmaB = -1;
-	for (Y = MinValue; Y < MaxValue; Y++)
-	{
-		PixelBack = PixelBack + HistGram[Y];
-		PixelFore = Amount - PixelBack;
-		OmegaBack = (double)PixelBack / Amount;
-		OmegaFore = (double)PixelFore / Amount;
-		PixelIntegralBack += HistGram[Y] * Y;
-		PixelIntegralFore = PixelIntegral - PixelIntegralBack;
-		MicroBack = (double)PixelIntegralBack / PixelBack;
- 		MicroFore = (double)PixelIntegralFore / PixelFore;
-		Sigma = OmegaBack * OmegaFore * (MicroBack - MicroFore) * (MicroBack - MicroFore);
-		if (Sigma > SigmaB)
-		{
-			SigmaB = Sigma;
-			Threshold = Y;
-		}
-	}
-	m_nThreshold = Threshold;
+    PixelIntegral = 0;
+    for (Y = MinValue; Y <= MaxValue; Y++) PixelIntegral += HistGram[Y] * Y;
+    SigmaB = -1;
+    for (Y = MinValue; Y < MaxValue; Y++)
+    {
+        PixelBack = PixelBack + HistGram[Y];
+        PixelFore = Amount - PixelBack;
+        OmegaBack = (double)PixelBack / Amount;
+        OmegaFore = (double)PixelFore / Amount;
+        PixelIntegralBack += HistGram[Y] * Y;
+        PixelIntegralFore = PixelIntegral - PixelIntegralBack;
+        MicroBack = (double)PixelIntegralBack / PixelBack;
+        MicroFore = (double)PixelIntegralFore / PixelFore;
+        Sigma = OmegaBack * OmegaFore * (MicroBack - MicroFore) * (MicroBack - MicroFore);
+        if (Sigma > SigmaB)
+        {
+            SigmaB = Sigma;
+            Threshold = Y;
+        }
+    }
 
-	return m_nThreshold;
+    return Threshold;
 }
-*/
 
 unsigned char * Imageprocess::GetBinaryzationedImgRawData(const unsigned char * gray_img,
 													   int Threshold) {
