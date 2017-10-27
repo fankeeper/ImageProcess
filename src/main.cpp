@@ -5,6 +5,7 @@ using namespace std;
 
 #include <stdio.h>
 
+//debug switch
 //#define __DEBUG
 //#define __DEBUG_IMG
 
