@@ -176,7 +176,7 @@ int Imageprocess::GetOSTUThreshold(int * HistGram) {
 
 unsigned char * Imageprocess::GetBinaryzationedImgRawData(const unsigned char * gray_img,
 													   int Threshold) {
-	m_pBinayRawImg = new unsigned char[m_nSize];
+/*	m_pBinayRawImg = new unsigned char[m_nSize];
 	memset(m_pBinayRawImg, 0, m_nSize);
 
 	for(unsigned int i=0; i<(m_nSize/3); i++) {
@@ -191,6 +191,19 @@ unsigned char * Imageprocess::GetBinaryzationedImgRawData(const unsigned char * 
 			m_pBinayRawImg[i*3+2] = 255;
 		}
 	}
+*/
+
+	m_pBinayRawImg = new unsigned char[m_nSize/24];
+	memset(m_pBinayRawImg, 0, m_nSize/24);
+
+	for(unsigned int i=0; i<(m_nSize/3); i++) {
+		if (gray_img[i] <= Threshold) {
+			m_pBinayRawImg[i>>3] = ((m_pBinayRawImg[i/8] << 1) | 0);
+		}
+		else {
+			m_pBinayRawImg[i>>3] = ((m_pBinayRawImg[i/8] << 1) | 1);
+		}
+	}
 
 	return m_pBinayRawImg;
 }
@@ -199,30 +212,60 @@ void Imageprocess::SaveAsBmpFile(unsigned char * RawData) {
 	BITMAPFILEHEADER file_header;
 	BITMAPINFOHEADER info_header;
 
-	file_header.bfType = m_pFileHeader->bfType;
-	file_header.bfSize = m_pFileHeader->bfSize;//0x000e108a;
-	file_header.bfReserved1 = m_pFileHeader->bfReserved1;
-	file_header.bfReserved2 = m_pFileHeader->bfReserved2;
-	file_header.bfOffBits = m_pFileHeader->bfOffBits;
+	int color_table[2];
+	color_table[0] = 0;
+	color_table[1] = 0xffffff;
 
-	info_header.biSize = m_pInfoHeader->biSize;
+	file_header.bfType = m_pFileHeader->bfType;
+	file_header.bfSize = m_nSize/24 + 54 + sizeof(color_table);//0x000e108a;
+	file_header.bfReserved1 = 0;
+	file_header.bfReserved2 = 0;
+	file_header.bfOffBits = 54 + sizeof(color_table);
+
+	info_header.biSize = 40;
 	info_header.biWidth = m_pInfoHeader->biWidth;
 	info_header.biHeight = m_pInfoHeader->biHeight;
-	info_header.biPlanes = m_pInfoHeader->biPlanes;
-	info_header.biBitCount = m_pInfoHeader->biBitCount;
-	info_header.biCompression = m_pInfoHeader->biCompression;
-	info_header.biSizeImage = m_pInfoHeader->biSizeImage;//0x000e1000;
+	info_header.biPlanes = 1;
+	info_header.biBitCount = 1;//m_pInfoHeader->biBitCount/3;
+	info_header.biCompression = 0;
+	info_header.biSizeImage = m_nSize/24;//m_pInfoHeader->biSizeImage;//0x000e1000;
 	info_header.biXPelsPerMeter = m_pInfoHeader->biXPelsPerMeter;
 	info_header.biYPelsPerMeter = m_pInfoHeader->biYPelsPerMeter;
-	info_header.biClrUsed = m_pInfoHeader->biClrUsed;
-	info_header.biClrImportant = m_pInfoHeader->biClrImportant;
+	info_header.biClrUsed = 0;
+	info_header.biClrImportant = 0;
 
-	unsigned char output_data[m_nSize+m_nbfOffBits];
+	unsigned char output_data[file_header.bfSize];
 
 	memcpy(output_data, &file_header, sizeof(BITMAPFILEHEADER));
 	memcpy(output_data+sizeof(BITMAPFILEHEADER), &info_header, sizeof(BITMAPINFOHEADER));
-	memcpy(output_data+file_header.bfOffBits, RawData, m_nSize);
+	memcpy(output_data+sizeof(BITMAPFILEHEADER)+sizeof(BITMAPINFOHEADER), color_table, sizeof(color_table));
+	memcpy(output_data+file_header.bfOffBits, RawData, info_header.biSizeImage);
 
+/*
+	file_header.bfType = m_pFileHeader->bfType;
+	file_header.bfSize = m_nSize + 54 ;//0x000e108a;
+	file_header.bfReserved1 = 0;
+	file_header.bfReserved2 = 0;
+	file_header.bfOffBits = 54;
+
+	info_header.biSize = 40;
+	info_header.biWidth = m_pInfoHeader->biWidth;
+	info_header.biHeight = m_pInfoHeader->biHeight;
+	info_header.biPlanes = 1;
+	info_header.biBitCount = 24;//m_pInfoHeader->biBitCount/3;
+	info_header.biCompression = 0;
+	info_header.biSizeImage = m_nSize;//m_pInfoHeader->biSizeImage;//0x000e1000;
+	info_header.biXPelsPerMeter = m_pInfoHeader->biXPelsPerMeter;
+	info_header.biYPelsPerMeter = m_pInfoHeader->biYPelsPerMeter;
+	info_header.biClrUsed = 0;
+	info_header.biClrImportant = 0;
+
+	unsigned char output_data[file_header.bfSize];
+
+	memcpy(output_data, &file_header, sizeof(BITMAPFILEHEADER));
+	memcpy(output_data+sizeof(BITMAPFILEHEADER), &info_header, sizeof(BITMAPINFOHEADER));
+	memcpy(output_data+file_header.bfOffBits, RawData, info_header.biSizeImage);
+*/
 	FILE * stream = fopen("../img/binarization_img.bmp", "wb");
 	fseek(stream, 0, SEEK_SET);
 	fwrite(output_data, sizeof(output_data), 1, stream);
@@ -242,8 +285,8 @@ unsigned char * Imageprocess::AverageFilter(const unsigned char * gray_img) {
 	for (unsigned int i=1; i<(m_nWidth-1); i++)
 		for (unsigned int j=1; j<(m_nHeight-1); j++) {
 			m_pAverageFilterImg[i+j] = ( img[i-1][j+1] + img[i][j+1] + img[i+1][j+1] +
-									     img[i-1][j] +   img[i][j] +   img[i+1][j] +
-									     img[i-1][j-1] + img[i][j-1] + img[i+1][j-1] ) / 9;
+										 img[i-1][j] +   img[i][j] +   img[i+1][j] +
+										 img[i-1][j-1] + img[i][j-1] + img[i+1][j-1] ) / 9;
 		}
 
 	for(unsigned int i=0; i<m_nWidth; i++) {

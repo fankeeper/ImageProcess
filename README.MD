@@ -19,6 +19,12 @@ You can download all these files into your personal computer for testing.
 - suitbale for all size img
 - add some new function
 
+###reference
+
+- http://paulbourke.net/dataformats/bitmaps/
+- https://web.archive.org/web/20080912171714/http://www.fortunecity.com/skyscraper/windows/364/bmpffrmt.html
+- https://www.cnblogs.com/Matrix_Yao/archive/2009/12/02/1615295.html
+
 ###contact
 
 If you have any problem about the code,  contact me without a hesitate.
