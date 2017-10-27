@@ -6,8 +6,8 @@ using namespace std;
 #include <stdio.h>
 
 //debug switch
-//#define __DEBUG
-//#define __DEBUG_IMG
+#define __DEBUG
+#define __DEBUG_IMG
 
 int main(int argc, char * argv[]) {
 	Imageprocess imageprocess;
@@ -18,8 +18,11 @@ int main(int argc, char * argv[]) {
 	int * HistGram = imageprocess.GetHistGram(GrayData); 
 	int Threshold = imageprocess.GetOSTUThreshold(HistGram);
 	unsigned char * BinaryzationedData = imageprocess.GetBinaryzationedImgRawData(GrayData, Threshold);
-	imageprocess.SaveAsBmpFile(BinaryzationedData, 1);
-	imageprocess.SaveAsBmpFile(GrayData, 8);
+	imageprocess.SaveAsBmpFile(BinaryzationedData, 1, "../img/binarization_img.bmp");
+	imageprocess.SaveAsBmpFile(GrayData, 8, "../img/gray_img.bmp");
+	unsigned char * AverageFilterData = imageprocess.AverageFilter(GrayData);
+	imageprocess.SaveAsBmpFile(AverageFilterData, 8, "../img/average_gray_img.bmp");
+
 
 #ifdef __DEBUG
 	cout << "size:  " << imageprocess.GetRawDataSize() << endl;
@@ -35,12 +38,9 @@ int main(int argc, char * argv[]) {
 #endif
 
 #ifdef __DEBUG_IMG
-	unsigned int j;
-	for (unsigned int i; i<256; i++) {
-		printf("%d : %d\n", i, HistGram[i]);
-		j += HistGram[i];
+	for (unsigned int i; i<2000; i++) {
+		printf("%d ", AverageFilterData[i]);
 	}
-	cout << "number of hist: " << j << endl;
 #endif
 
 	return 0;	
