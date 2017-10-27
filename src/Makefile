@@ -1,5 +1,5 @@
 all:
-	g++ -g imageprocess.cpp main.cpp -o try
+	g++ -g imageprocess.cpp main.cpp -o ../exectable/try
 
 clean:
-	rm *.o t -f
+	rm ../exectable/*.o t -f

@@ -5,15 +5,13 @@ using namespace std;
 
 #include <stdio.h>
 
-
-
-#define __DEBUG
+//#define __DEBUG
 //#define __DEBUG_IMG
 
 int main(int argc, char * argv[]) {
 	Imageprocess imageprocess;
 
-	imageprocess.BmpImgLoad("./data.bmp");
+	imageprocess.BmpImgLoad("../img/data.bmp");
 	unsigned char * RawData = imageprocess.GetRawData();
 	unsigned char * GrayData = imageprocess.GetTransGray(RawData);
 	int * HistGram = imageprocess.GetHistGram(GrayData); 

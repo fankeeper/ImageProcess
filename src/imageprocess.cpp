@@ -266,7 +266,7 @@ void Imageprocess::SaveAsBmpFile(unsigned char * RawData) {
 	memcpy(output_data+sizeof(BITMAPFILEHEADER), &info_header, sizeof(BITMAPINFOHEADER));
 	memcpy(output_data+file_header.bfOffBits, RawData, m_nSize);
 
-	FILE * stream = fopen("./result3.bmp", "wb");
+	FILE * stream = fopen("../img/binarization_img.bmp", "wb");
 	fseek(stream, 0, SEEK_SET);
 	fwrite(output_data, sizeof(output_data), 1, stream);
 	fflush(stream);
