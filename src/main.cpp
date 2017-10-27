@@ -18,7 +18,8 @@ int main(int argc, char * argv[]) {
 	int * HistGram = imageprocess.GetHistGram(GrayData); 
 	int Threshold = imageprocess.GetOSTUThreshold(HistGram);
 	unsigned char * BinaryzationedData = imageprocess.GetBinaryzationedImgRawData(GrayData, Threshold);
-	imageprocess.SaveAsBmpFile(BinaryzationedData);
+	imageprocess.SaveAsBmpFile(BinaryzationedData, 1);
+	imageprocess.SaveAsBmpFile(GrayData, 8);
 
 #ifdef __DEBUG
 	cout << "size:  " << imageprocess.GetRawDataSize() << endl;

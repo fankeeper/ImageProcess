@@ -4,6 +4,7 @@
 typedef int LONG;
 typedef unsigned short WORD;
 typedef unsigned int DWORD;
+typedef unsigned char BYTE;
 
 typedef struct tagBITMAPFILEHEADER {
 	WORD  bfType;
@@ -26,5 +27,12 @@ typedef struct tagBITMAPINFOHEADER {
 	DWORD biClrUsed;
 	DWORD biClrImportant;
 } BITMAPINFOHEADER, *PBITMAPINFOHEADER;
+
+typedef struct tagRGBQUAD {
+	BYTE    rgbBlue;
+	BYTE    rgbGreen;
+	BYTE    rgbRed;
+	BYTE    rgbReserved;
+} RGBQUAD;
 
 #endif
