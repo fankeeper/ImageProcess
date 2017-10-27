@@ -21,5 +21,7 @@ You can download all these files into your personal computer for testing.
 
 ###contact
 
+If you have any problem about the code,  contact me without a hesitate.
+
 - mail @ ma17129 at shibaura-it.ac.jp
 - Wechat @ fankeeper
