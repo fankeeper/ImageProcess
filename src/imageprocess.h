@@ -40,6 +40,7 @@ private:
 	int * m_pHistGram;
 	unsigned char * m_pBinayRawImg;
 	unsigned char * m_pAverageFilterImg;
+	unsigned char * m_pMiddleFilterImg;
 	unsigned int m_nThreshold;
 	unsigned int m_nWidth;
 	unsigned int m_nHeight;

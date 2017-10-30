@@ -15,6 +15,12 @@ Imageprocess::Imageprocess() {
 	m_pInfoHeader = NULL;
 	m_buffer = NULL;
 	m_pRawData = NULL;
+	m_pGrayImg = NULL;
+	m_pHistGram = NULL;
+	m_pBinayRawImg = NULL;
+	m_pAverageFilterImg = NULL;
+	m_pMiddleFilterImg = NULL;
+	m_nThreshold = 0;
 	m_nWidth = 0;
 	m_nHeight = 0;
 	m_nSize = 0;
@@ -71,7 +77,19 @@ void Imageprocess::BmpImgUnLoad() {
 	m_pInfoHeader = NULL;
 	delete [] m_buffer;
 	m_buffer = NULL;
+	//delete [] m_pRawData;
 	m_pRawData = NULL;
+	//delete [] m_pGrayImg;
+	m_pGrayImg = NULL;
+	delete [] m_pHistGram;
+	m_pHistGram = NULL;
+	delete [] m_pBinayRawImg;
+	m_pBinayRawImg = NULL;
+	delete [] m_pAverageFilterImg;
+	m_pAverageFilterImg = NULL;
+	delete [] m_pMiddleFilterImg;
+	m_pMiddleFilterImg = NULL;
+	m_nThreshold = 0;
 	m_nWidth = 0;
 	m_nHeight = 0;
 	m_nSize = 0;
@@ -365,8 +383,8 @@ unsigned char Imageprocess::BubbleSort(unsigned char * number, unsigned int odd_
 
 unsigned char * Imageprocess::MiddleFilter(const unsigned char * gray_img) {
 	unsigned char img[m_nWidth][m_nHeight];
-	m_pAverageFilterImg = new unsigned char[m_nHeight * m_nWidth];
-	memset(m_pAverageFilterImg, 0, m_nHeight * m_nWidth);
+	m_pMiddleFilterImg = new unsigned char[m_nHeight * m_nWidth];
+	memset(m_pMiddleFilterImg, 0, m_nHeight * m_nWidth);
 
 	for (unsigned int i=0; i<m_nWidth; i++)
 		for (unsigned int j=0; j<m_nHeight; j++) {
@@ -385,20 +403,20 @@ unsigned char * Imageprocess::MiddleFilter(const unsigned char * gray_img) {
 			temp[6] = img[i-1][j-1];
 			temp[7] = img[i][j-1];
 			temp[8] = img[i+1][j-1];
-			m_pAverageFilterImg[i*m_nWidth+j] = BubbleSort(temp, 9);
+			m_pMiddleFilterImg[i*m_nWidth+j] = BubbleSort(temp, 9);
 		}
 
 	for(unsigned int i=0; i<m_nWidth; i++) {
-		m_pAverageFilterImg[i] = img[0][i];
-		m_pAverageFilterImg[m_nHeight*m_nWidth-1-960+i] = img[m_nHeight-1][i];
+		m_pMiddleFilterImg[i] = img[0][i];
+		m_pMiddleFilterImg[m_nHeight*m_nWidth-1-960+i] = img[m_nHeight-1][i];
 	}
 
 	for(unsigned int i=0; i<m_nHeight; i++) {
-		m_pAverageFilterImg[m_nHeight*i] = img[i][0];
-		m_pAverageFilterImg[m_nWidth+m_nHeight*i-1] = img[i][m_nWidth-1];
+		m_pMiddleFilterImg[m_nHeight*i] = img[i][0];
+		m_pMiddleFilterImg[m_nWidth+m_nHeight*i-1] = img[i][m_nWidth-1];
 	}
 
-	return m_pAverageFilterImg;
+	return m_pMiddleFilterImg;
 }
 
 

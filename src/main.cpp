@@ -12,7 +12,7 @@ using namespace std;
 int main(int argc, char * argv[]) {
 	Imageprocess imageprocess;
 
-	imageprocess.BmpImgLoad("../img/data.bmp");
+	imageprocess.BmpImgLoad("../img/source_img.bmp");
 	unsigned char * RawData = imageprocess.GetRawData();
 	unsigned char * GrayData = imageprocess.GetTransGray(RawData);
 	int * HistGram = imageprocess.GetHistGram(GrayData); 
