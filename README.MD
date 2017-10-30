@@ -24,6 +24,7 @@ You can download all these files into your personal computer for testing.
 - http://paulbourke.net/dataformats/bitmaps/
 - https://web.archive.org/web/20080912171714/http://www.fortunecity.com/skyscraper/windows/364/bmpffrmt.html
 - https://www.cnblogs.com/Matrix_Yao/archive/2009/12/02/1615295.html
+- http://www.cnblogs.com/eniac12/p/5329396.html
 
 ###contact
 
