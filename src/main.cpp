@@ -6,8 +6,8 @@ using namespace std;
 #include <stdio.h>
 
 //debug switch
-#define __DEBUG
-#define __DEBUG_IMG
+//#define __DEBUG
+//#define __DEBUG_IMG
 
 int main(int argc, char * argv[]) {
 	Imageprocess imageprocess;
@@ -22,6 +22,8 @@ int main(int argc, char * argv[]) {
 	imageprocess.SaveAsBmpFile(GrayData, 8, "../img/gray_img.bmp");
 	unsigned char * AverageFilterData = imageprocess.AverageFilter(GrayData);
 	imageprocess.SaveAsBmpFile(AverageFilterData, 8, "../img/average_gray_img.bmp");
+	unsigned char * MiddleFilterData = imageprocess.MiddleFilter(GrayData);
+	imageprocess.SaveAsBmpFile(MiddleFilterData, 8, "../img/middle_gray_img.bmp");
 
 
 #ifdef __DEBUG

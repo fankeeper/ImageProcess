@@ -324,31 +324,82 @@ unsigned char * Imageprocess::AverageFilter(const unsigned char * gray_img) {
 
 	for (unsigned int i=0; i<m_nWidth; i++)
 		for (unsigned int j=0; j<m_nHeight; j++) {
-			img[i][j] = gray_img[i*m_nHeight+j];
+			img[i][j] = gray_img[i*m_nWidth+j];
 		}
 
 	for (unsigned int i=1; i<(m_nWidth-1); i++)
 		for (unsigned int j=1; j<(m_nHeight-1); j++) {
 			m_pAverageFilterImg[i*m_nWidth+j] = ( img[i-1][j+1] + img[i][j+1] + img[i+1][j+1] +
-										 img[i-1][j] +   img[i][j] +   img[i+1][j] +
-										 img[i-1][j-1] + img[i][j-1] + img[i+1][j-1] ) / 9;
+												  img[i-1][j] +   img[i][j] +   img[i+1][j] +
+												  img[i-1][j-1] + img[i][j-1] + img[i+1][j-1] ) / 9;
 		}
-/*
+
 	for(unsigned int i=0; i<m_nWidth; i++) {
 		m_pAverageFilterImg[i] = img[0][i];
-		m_pAverageFilterImg[m_nHeight*m_nWidth-1-960] = img[m_nHeight-1][i];
+		m_pAverageFilterImg[m_nHeight*m_nWidth-1-960+i] = img[m_nHeight-1][i];
 	}
 
 	for(unsigned int i=0; i<m_nHeight; i++) {
 		m_pAverageFilterImg[m_nHeight*i] = img[i][0];
 		m_pAverageFilterImg[m_nWidth+m_nHeight*i-1] = img[i][m_nWidth-1];
 	}
-*/
+
 	return m_pAverageFilterImg;
 }
 
+unsigned char Imageprocess::BubbleSort(unsigned char * number, unsigned int odd_n) {
+	unsigned char temp;
 
+	for (unsigned int j=0; j<odd_n-1; j++) {
+		for (unsigned int i=0; i<odd_n-1-j; i++) {
+			if (number[i] > number[i+1]) {
+				temp = number[i];
+				number[i] = number[i+1];
+				number[i+1] = temp;
+			}
+		}
+	}
 
+	return number[odd_n/2+1];
+}
+
+unsigned char * Imageprocess::MiddleFilter(const unsigned char * gray_img) {
+	unsigned char img[m_nWidth][m_nHeight];
+	m_pAverageFilterImg = new unsigned char[m_nHeight * m_nWidth];
+	memset(m_pAverageFilterImg, 0, m_nHeight * m_nWidth);
+
+	for (unsigned int i=0; i<m_nWidth; i++)
+		for (unsigned int j=0; j<m_nHeight; j++) {
+			img[i][j] = gray_img[i*m_nWidth+j];
+		}
+
+	for (unsigned int i=1; i<(m_nWidth-1); i++)
+		for (unsigned int j=1; j<(m_nHeight-1); j++) {
+			unsigned char temp[9];
+			temp[0] = img[i-1][j+1];
+			temp[1] = img[i][j+1];
+			temp[2] = img[i+1][j+1];
+			temp[3] = img[i-1][j];
+			temp[4] = img[i][j];
+			temp[5] = img[i+1][j];
+			temp[6] = img[i-1][j-1];
+			temp[7] = img[i][j-1];
+			temp[8] = img[i+1][j-1];
+			m_pAverageFilterImg[i*m_nWidth+j] = BubbleSort(temp, 9);
+		}
+
+	for(unsigned int i=0; i<m_nWidth; i++) {
+		m_pAverageFilterImg[i] = img[0][i];
+		m_pAverageFilterImg[m_nHeight*m_nWidth-1-960+i] = img[m_nHeight-1][i];
+	}
+
+	for(unsigned int i=0; i<m_nHeight; i++) {
+		m_pAverageFilterImg[m_nHeight*i] = img[i][0];
+		m_pAverageFilterImg[m_nWidth+m_nHeight*i-1] = img[i][m_nWidth-1];
+	}
+
+	return m_pAverageFilterImg;
+}
 
 
 
