@@ -19,11 +19,15 @@ int main(int argc, char * argv[]) {
 	int Threshold = imageprocess.GetOSTUThreshold(HistGram);
 	unsigned char * BinaryzationedData = imageprocess.GetBinaryzationedImgRawData(GrayData, Threshold);
 	imageprocess.SaveAsBmpFile(BinaryzationedData, 1, "../img/binarization_img.bmp");
+	cout << "save binarization_img sucessfully." << endl;
 	imageprocess.SaveAsBmpFile(GrayData, 8, "../img/gray_img.bmp");
-	unsigned char * AverageFilterData = imageprocess.AverageFilter(GrayData);
-	imageprocess.SaveAsBmpFile(AverageFilterData, 8, "../img/average_gray_img.bmp");
+	cout << "save gray_img sucessfully." << endl;
+	unsigned char * NormalizedBoxFilterData = imageprocess.NormalizedBoxFilter(GrayData);
+	imageprocess.SaveAsBmpFile(NormalizedBoxFilterData, 8, "../img/normalized_gray_img.bmp");
+	cout << "save normalized_gray_img sucessfully." << endl;
 	unsigned char * MiddleFilterData = imageprocess.MiddleFilter(GrayData);
 	imageprocess.SaveAsBmpFile(MiddleFilterData, 8, "../img/middle_gray_img.bmp");
+	cout << "save middle_gray_img sucessfully." << endl;
 
 
 #ifdef __DEBUG

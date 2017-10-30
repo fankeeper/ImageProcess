@@ -25,7 +25,7 @@ public:
 	int GetOSTUThreshold(int * HistGram);
 	unsigned char * GetBinaryzationedImgRawData(const unsigned char * gray_img, int Threshold);
 	void SaveAsBmpFile(unsigned char * RawData, const unsigned char type, const char * output_path);
-	unsigned char * AverageFilter(const unsigned char * gray_img);
+	unsigned char * NormalizedBoxFilter(const unsigned char * gray_img);
 	unsigned char * MiddleFilter(const unsigned char * gray_img);
 
 private:
@@ -39,7 +39,7 @@ private:
 	unsigned char * m_pGrayImg;
 	int * m_pHistGram;
 	unsigned char * m_pBinayRawImg;
-	unsigned char * m_pAverageFilterImg;
+	unsigned char * m_pNormalizedBoxFilterImg;
 	unsigned char * m_pMiddleFilterImg;
 	unsigned int m_nThreshold;
 	unsigned int m_nWidth;

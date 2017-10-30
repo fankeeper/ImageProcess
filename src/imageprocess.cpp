@@ -18,7 +18,7 @@ Imageprocess::Imageprocess() {
 	m_pGrayImg = NULL;
 	m_pHistGram = NULL;
 	m_pBinayRawImg = NULL;
-	m_pAverageFilterImg = NULL;
+	m_pNormalizedBoxFilterImg = NULL;
 	m_pMiddleFilterImg = NULL;
 	m_nThreshold = 0;
 	m_nWidth = 0;
@@ -85,8 +85,8 @@ void Imageprocess::BmpImgUnLoad() {
 	m_pHistGram = NULL;
 	delete [] m_pBinayRawImg;
 	m_pBinayRawImg = NULL;
-	delete [] m_pAverageFilterImg;
-	m_pAverageFilterImg = NULL;
+	delete [] m_pNormalizedBoxFilterImg;
+	m_pNormalizedBoxFilterImg = NULL;
 	delete [] m_pMiddleFilterImg;
 	m_pMiddleFilterImg = NULL;
 	m_nThreshold = 0;
@@ -335,10 +335,10 @@ void Imageprocess::SaveAsBmpFile(unsigned char * RawData, const unsigned char ty
 */
 }
 
-unsigned char * Imageprocess::AverageFilter(const unsigned char * gray_img) {
+unsigned char * Imageprocess::NormalizedBoxFilter(const unsigned char * gray_img) {
 	unsigned char img[m_nWidth][m_nHeight];
-	m_pAverageFilterImg = new unsigned char[m_nHeight * m_nWidth];
-	memset(m_pAverageFilterImg, 0, m_nHeight * m_nWidth);
+	m_pNormalizedBoxFilterImg = new unsigned char[m_nHeight * m_nWidth];
+	memset(m_pNormalizedBoxFilterImg, 0, m_nHeight * m_nWidth);
 
 	for (unsigned int i=0; i<m_nWidth; i++)
 		for (unsigned int j=0; j<m_nHeight; j++) {
@@ -347,22 +347,22 @@ unsigned char * Imageprocess::AverageFilter(const unsigned char * gray_img) {
 
 	for (unsigned int i=1; i<(m_nWidth-1); i++)
 		for (unsigned int j=1; j<(m_nHeight-1); j++) {
-			m_pAverageFilterImg[i*m_nWidth+j] = ( img[i-1][j+1] + img[i][j+1] + img[i+1][j+1] +
+			m_pNormalizedBoxFilterImg[i*m_nWidth+j] = ( img[i-1][j+1] + img[i][j+1] + img[i+1][j+1] +
 												  img[i-1][j] +   img[i][j] +   img[i+1][j] +
 												  img[i-1][j-1] + img[i][j-1] + img[i+1][j-1] ) / 9;
 		}
 
 	for(unsigned int i=0; i<m_nWidth; i++) {
-		m_pAverageFilterImg[i] = img[0][i];
-		m_pAverageFilterImg[m_nHeight*m_nWidth-1-960+i] = img[m_nHeight-1][i];
+		m_pNormalizedBoxFilterImg[i] = img[0][i];
+		m_pNormalizedBoxFilterImg[m_nHeight*m_nWidth-1-960+i] = img[m_nHeight-1][i];
 	}
 
 	for(unsigned int i=0; i<m_nHeight; i++) {
-		m_pAverageFilterImg[m_nHeight*i] = img[i][0];
-		m_pAverageFilterImg[m_nWidth+m_nHeight*i-1] = img[i][m_nWidth-1];
+		m_pNormalizedBoxFilterImg[m_nHeight*i] = img[i][0];
+		m_pNormalizedBoxFilterImg[m_nWidth+m_nHeight*i-1] = img[i][m_nWidth-1];
 	}
 
-	return m_pAverageFilterImg;
+	return m_pNormalizedBoxFilterImg;
 }
 
 unsigned char Imageprocess::BubbleSort(unsigned char * number, unsigned int odd_n) {
