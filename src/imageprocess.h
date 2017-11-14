@@ -27,6 +27,7 @@ public:
 	void SaveAsBmpFile(unsigned char * RawData, const unsigned char type, const char * output_path);
 	unsigned char * NormalizedBoxFilter(const unsigned char * gray_img);
 	unsigned char * MiddleFilter(const unsigned char * gray_img);
+	unsigned char * SobelFilter(const unsigned char * gray_img);
 
 private:
 	unsigned char BubbleSort(unsigned char * number, unsigned int odd_n);
@@ -41,6 +42,7 @@ private:
 	unsigned char * m_pBinayRawImg;
 	unsigned char * m_pNormalizedBoxFilterImg;
 	unsigned char * m_pMiddleFilterImg;
+	unsigned char * m_pSobelFilterImg;
 	unsigned int m_nThreshold;
 	unsigned int m_nWidth;
 	unsigned int m_nHeight;

@@ -20,6 +20,7 @@ Imageprocess::Imageprocess() {
 	m_pBinayRawImg = NULL;
 	m_pNormalizedBoxFilterImg = NULL;
 	m_pMiddleFilterImg = NULL;
+	m_pSobelFilterImg = NULL;
 	m_nThreshold = 0;
 	m_nWidth = 0;
 	m_nHeight = 0;
@@ -89,6 +90,8 @@ void Imageprocess::BmpImgUnLoad() {
 	m_pNormalizedBoxFilterImg = NULL;
 	delete [] m_pMiddleFilterImg;
 	m_pMiddleFilterImg = NULL;
+	delete [] m_pSobelFilterImg;
+	m_pSobelFilterImg = NULL;
 	m_nThreshold = 0;
 	m_nWidth = 0;
 	m_nHeight = 0;
@@ -419,7 +422,44 @@ unsigned char * Imageprocess::MiddleFilter(const unsigned char * gray_img) {
 	return m_pMiddleFilterImg;
 }
 
+unsigned char * Imageprocess::SobelFilter(const unsigned char * gray_img) {
+	unsigned char img[m_nWidth][m_nHeight];
+	int Gx, Gy, G;
+	m_pSobelFilterImg = new unsigned char[m_nHeight * m_nWidth];
+	memset(m_pSobelFilterImg, 0, m_nHeight * m_nWidth);
 
+	for (unsigned int i=0; i<m_nWidth; i++)
+		for (unsigned int j=0; j<m_nHeight; j++) {
+			img[i][j] = gray_img[i*m_nWidth+j];
+		}
+
+	for (unsigned int i=1; i<(m_nWidth-1); i++)
+		for (unsigned int j=1; j<(m_nHeight-1); j++) {
+			Gx =	(-1)*img[i-1][j+1] + (0)*img[i][j+1] + (1)*img[i+1][j+1] +
+					(-2)*img[i-1][j] +   (0)*img[i][j] +   (2)*img[i+1][j] +
+					(-1)*img[i-1][j-1] + (0)*img[i][j-1] + (1)*img[i+1][j-1];
+			if (Gx < 0) { Gx = -Gx; }
+			Gy =	(1)*img[i-1][j+1] + (2)*img[i][j+1] + (1)*img[i+1][j+1] +
+					(0)*img[i-1][j] +   (0)*img[i][j] +   (0)*img[i+1][j] +
+					(-1)*img[i-1][j-1] + (-2)*img[i][j-1] + (-1)*img[i+1][j-1];
+			if (Gy < 0) { Gy = -Gy; }
+			G = Gx + Gy;
+			m_pSobelFilterImg[i*m_nWidth+j] = G;
+
+		}
+
+	for(unsigned int i=0; i<m_nWidth; i++) {
+		m_pSobelFilterImg[i] = img[0][i];
+		m_pSobelFilterImg[m_nHeight*m_nWidth-1-960+i] = img[m_nHeight-1][i];
+	}
+
+	for(unsigned int i=0; i<m_nHeight; i++) {
+		m_pSobelFilterImg[m_nHeight*i] = img[i][0];
+		m_pSobelFilterImg[m_nWidth+m_nHeight*i-1] = img[i][m_nWidth-1];
+	}
+
+	return m_pSobelFilterImg;
+}
 
 
 

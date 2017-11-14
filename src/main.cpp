@@ -28,6 +28,9 @@ int main(int argc, char * argv[]) {
 	unsigned char * MiddleFilterData = imageprocess.MiddleFilter(GrayData);
 	imageprocess.SaveAsBmpFile(MiddleFilterData, 8, "../img/middle_gray_img.bmp");
 	cout << "save middle_gray_img sucessfully." << endl;
+	unsigned char * SobelFilterData = imageprocess.SobelFilter(GrayData);
+	imageprocess.SaveAsBmpFile(SobelFilterData, 8, "../img/sobel_img.bmp");
+	cout << "save sobel_img sucessfully." << endl;
 
 
 #ifdef __DEBUG
