@@ -21,6 +21,9 @@ Imageprocess::Imageprocess() {
 	m_pNormalizedBoxFilterImg = NULL;
 	m_pMiddleFilterImg = NULL;
 	m_pSobelFilterImg = NULL;
+	m_pLaplacianFilterImg = NULL;
+	m_pGaussBlurImg = NULL;
+	m_pEnlargeImg = NULL;
 	m_nThreshold = 0;
 	m_nWidth = 0;
 	m_nHeight = 0;
@@ -92,6 +95,12 @@ void Imageprocess::BmpImgUnLoad() {
 	m_pMiddleFilterImg = NULL;
 	delete [] m_pSobelFilterImg;
 	m_pSobelFilterImg = NULL;
+	delete [] m_pLaplacianFilterImg;
+	m_pLaplacianFilterImg = NULL;
+	delete [] m_pGaussBlurImg;
+	m_pGaussBlurImg = NULL;
+	delete [] m_pEnlargeImg;
+	m_pEnlargeImg = NULL;
 	m_nThreshold = 0;
 	m_nWidth = 0;
 	m_nHeight = 0;
@@ -230,31 +239,29 @@ unsigned char * Imageprocess::GetBinaryzationedImgRawData(const unsigned char * 
 	return m_pBinayRawImg;
 }
 
-void Imageprocess::SaveAsBmpFile(unsigned char * RawData, const unsigned char type, const char * output_path) {
+void Imageprocess::SaveAsBmpFile(unsigned char * RawData, const int width, const int height,
+								const unsigned char type, const char * output_path) {
 	BITMAPFILEHEADER file_header;
 	BITMAPINFOHEADER info_header;
 
 	if (1 == type) {
-		//int color_table[2];
 		RGBQUAD color_table[2];
 		memset(&color_table[0], 0, sizeof(RGBQUAD));
 		memset(&color_table[1], 0xff, sizeof(RGBQUAD));
-		//color_table[0] = 0;
-		//color_table[1] = 0xffffff;
 
 		file_header.bfType = m_pFileHeader->bfType;
-		file_header.bfSize = m_nSize/24 + 54 + sizeof(color_table);//0x000e108a;
+		file_header.bfSize = (unsigned int)((width * height)/8 + 54 + sizeof(color_table));//0x000e108a;
 		file_header.bfReserved1 = 0;
 		file_header.bfReserved2 = 0;
 		file_header.bfOffBits = 54 + sizeof(color_table);
 
 		info_header.biSize = 40;
-		info_header.biWidth = m_pInfoHeader->biWidth;
-		info_header.biHeight = m_pInfoHeader->biHeight;
+		info_header.biWidth = width;
+		info_header.biHeight = height;
 		info_header.biPlanes = 1;
 		info_header.biBitCount = 1;//m_pInfoHeader->biBitCount/3;
 		info_header.biCompression = 0;
-		info_header.biSizeImage = m_nSize/24;//m_pInfoHeader->biSizeImage;//0x000e1000;
+		info_header.biSizeImage = (unsigned int)((width * height)/8);//m_pInfoHeader->biSizeImage;//0x000e1000;
 		info_header.biXPelsPerMeter = m_pInfoHeader->biXPelsPerMeter;
 		info_header.biYPelsPerMeter = m_pInfoHeader->biYPelsPerMeter;
 		info_header.biClrUsed = 0;
@@ -280,18 +287,18 @@ void Imageprocess::SaveAsBmpFile(unsigned char * RawData, const unsigned char ty
 		}
 
 		file_header.bfType = m_pFileHeader->bfType;
-		file_header.bfSize = m_nSize/3 + 54 + sizeof(color_table);//0x000e108a;
+		file_header.bfSize = (unsigned int)(width * height + 54 + sizeof(color_table));//0x000e108a;
 		file_header.bfReserved1 = 0;
 		file_header.bfReserved2 = 0;
 		file_header.bfOffBits = 54 + sizeof(color_table);
 
 		info_header.biSize = 40;
-		info_header.biWidth = m_pInfoHeader->biWidth;
-		info_header.biHeight = m_pInfoHeader->biHeight;
+		info_header.biWidth = width;
+		info_header.biHeight = height;
 		info_header.biPlanes = 1;
 		info_header.biBitCount = 8;//m_pInfoHeader->biBitCount/3;
 		info_header.biCompression = 0;
-		info_header.biSizeImage = m_nSize/3;//m_pInfoHeader->biSizeImage;//0x000e1000;
+		info_header.biSizeImage = (unsigned int)(width*height);//m_pInfoHeader->biSizeImage;//0x000e1000;
 		info_header.biXPelsPerMeter = m_pInfoHeader->biXPelsPerMeter;
 		info_header.biYPelsPerMeter = m_pInfoHeader->biYPelsPerMeter;
 		info_header.biClrUsed = 0;
@@ -310,32 +317,37 @@ void Imageprocess::SaveAsBmpFile(unsigned char * RawData, const unsigned char ty
 		fflush(stream);
 		fclose(stream);
 	}
+	else if (24 == type) {
+		file_header.bfType = m_pFileHeader->bfType;
+		file_header.bfSize = width*height*3 + 54;
+		file_header.bfReserved1 = 0;
+		file_header.bfReserved2 = 0;
+		file_header.bfOffBits = 54;
 
-/*
-	file_header.bfType = m_pFileHeader->bfType;
-	file_header.bfSize = m_nSize + 54 ;//0x000e108a;
-	file_header.bfReserved1 = 0;
-	file_header.bfReserved2 = 0;
-	file_header.bfOffBits = 54;
+		info_header.biSize = 40;
+		info_header.biWidth = width;
+		info_header.biHeight = height;
+		info_header.biPlanes = 1;
+		info_header.biBitCount = 24;//m_pInfoHeader->biBitCount/3;
+		info_header.biCompression = 0;
+		info_header.biSizeImage = width*height*3;//m_pInfoHeader->biSizeImage;//0x000e1000;
+		info_header.biXPelsPerMeter = m_pInfoHeader->biXPelsPerMeter;
+		info_header.biYPelsPerMeter = m_pInfoHeader->biYPelsPerMeter;
+		info_header.biClrUsed = 0;
+		info_header.biClrImportant = 0;
 
-	info_header.biSize = 40;
-	info_header.biWidth = m_pInfoHeader->biWidth;
-	info_header.biHeight = m_pInfoHeader->biHeight;
-	info_header.biPlanes = 1;
-	info_header.biBitCount = 24;//m_pInfoHeader->biBitCount/3;
-	info_header.biCompression = 0;
-	info_header.biSizeImage = m_nSize;//m_pInfoHeader->biSizeImage;//0x000e1000;
-	info_header.biXPelsPerMeter = m_pInfoHeader->biXPelsPerMeter;
-	info_header.biYPelsPerMeter = m_pInfoHeader->biYPelsPerMeter;
-	info_header.biClrUsed = 0;
-	info_header.biClrImportant = 0;
+		unsigned char output_data[file_header.bfSize];
 
-	unsigned char output_data[file_header.bfSize];
+		memcpy(output_data, &file_header, sizeof(BITMAPFILEHEADER));
+		memcpy(output_data+sizeof(BITMAPFILEHEADER), &info_header, sizeof(BITMAPINFOHEADER));
+		memcpy(output_data+file_header.bfOffBits, RawData, info_header.biSizeImage);
 
-	memcpy(output_data, &file_header, sizeof(BITMAPFILEHEADER));
-	memcpy(output_data+sizeof(BITMAPFILEHEADER), &info_header, sizeof(BITMAPINFOHEADER));
-	memcpy(output_data+file_header.bfOffBits, RawData, info_header.biSizeImage);
-*/
+		FILE * stream = fopen(output_path, "wb");
+		fseek(stream, 0, SEEK_SET);
+		fwrite(output_data, sizeof(output_data), 1, stream);
+		fflush(stream);
+		fclose(stream);
+	}
 }
 
 unsigned char * Imageprocess::NormalizedBoxFilter(const unsigned char * gray_img) {
@@ -461,12 +473,111 @@ unsigned char * Imageprocess::SobelFilter(const unsigned char * gray_img) {
 	return m_pSobelFilterImg;
 }
 
+unsigned char * Imageprocess::LaplacianFilter(const unsigned char * gray_img) {
+	unsigned char img[m_nWidth][m_nHeight];
+	int G;
+	m_pLaplacianFilterImg = new unsigned char[m_nHeight * m_nWidth];
+	memset(m_pLaplacianFilterImg, 0, m_nHeight * m_nWidth);
 
+	for (unsigned int i=0; i<m_nWidth; i++)
+		for (unsigned int j=0; j<m_nHeight; j++) {
+			img[i][j] = gray_img[i*m_nWidth+j];
+		}
 
+	for (unsigned int i=1; i<(m_nWidth-1); i++)
+		for (unsigned int j=1; j<(m_nHeight-1); j++) {
+			G  =	(1)*img[i-1][j+1] + (1)*img[i][j+1] + (1)*img[i+1][j+1] +
+					(1)*img[i-1][j] +   (-8)*img[i][j] +   (1)*img[i+1][j] +
+					(1)*img[i-1][j-1] + (1)*img[i][j-1] + (1)*img[i+1][j-1];
+			if ( G > 50 ) { m_pLaplacianFilterImg[i*m_nWidth+j] = 255; }
+			else { m_pLaplacianFilterImg[i*m_nWidth+j] = 0; }
+		}
 
+	for(unsigned int i=0; i<m_nWidth; i++) {
+		m_pLaplacianFilterImg[i] = img[0][i];
+		m_pLaplacianFilterImg[m_nHeight*m_nWidth-1-960+i] = img[m_nHeight-1][i];
+	}
 
+	for(unsigned int i=0; i<m_nHeight; i++) {
+		m_pLaplacianFilterImg[m_nHeight*i] = img[i][0];
+		m_pLaplacianFilterImg[m_nWidth+m_nHeight*i-1] = img[i][m_nWidth-1];
+	}
 
+	return m_pLaplacianFilterImg;
+}
 
+unsigned char * Imageprocess::GaussBlur(const unsigned char * gray_img) {
+	unsigned char img[m_nWidth][m_nHeight];
+	m_pGaussBlurImg = new unsigned char[m_nHeight * m_nWidth];
+	memset(m_pGaussBlurImg, 0, m_nHeight * m_nWidth);
+
+	for (unsigned int i=0; i<m_nWidth; i++)
+		for (unsigned int j=0; j<m_nHeight; j++) {
+			img[i][j] = gray_img[i*m_nWidth+j];
+		}
+
+	for (unsigned int i=1; i<(m_nWidth-1); i++)
+		for (unsigned int j=1; j<(m_nHeight-1); j++) {
+			m_pGaussBlurImg[i*m_nWidth+j] = (0.0947416)*img[i-1][j+1] + (0.118318)*img[i][j+1] + (1.51587)*img[i+1][j+1] +
+											(0.1183180)*img[i-1][j] +   (0.147761)*img[i][j] +   (0.1183180)*img[i+1][j] +
+											(0.0947416)*img[i-1][j-1] + (0.118318)*img[i][j-1] + (3.41070)*img[i+1][j-1] ;
+		}
+
+	for(unsigned int i=0; i<m_nWidth; i++) {
+		m_pGaussBlurImg[i] = img[0][i];
+		m_pGaussBlurImg[m_nHeight*m_nWidth-1-960+i] = img[m_nHeight-1][i];
+	}
+
+	for(unsigned int i=0; i<m_nHeight; i++) {
+		m_pGaussBlurImg[m_nHeight*i] = img[i][0];
+		m_pGaussBlurImg[m_nWidth+m_nHeight*i-1] = img[i][m_nWidth-1];
+	}
+
+	return m_pGaussBlurImg;
+}
+
+unsigned char * Imageprocess::Enlarge(const unsigned char * gray_img, const int width, const int height,
+									  const unsigned char mutiple) {
+	unsigned int size;
+	size = (width*mutiple) * (height*mutiple);
+	m_pEnlargeImg = new unsigned char[size];
+	memset(m_pEnlargeImg, 0, size);
+	unsigned char enlarge_img[width*mutiple][height*mutiple];
+
+	for (unsigned int i=0; i<width; i++)
+		for (unsigned int j=0; j<height; j++) {
+			//m_pEnlargeImg[i*width*mutiple+j*mutiple] = gray_img[i*width+j];
+			//m_pEnlargeImg[i*width*mutiple+j*mutiple+1] = gray_img[i*width+j];
+			//m_pEnlargeImg[(i*mutiple+1)*width+j*mutiple] = gray_img[i*width+j];
+			//m_pEnlargeImg[(i*mutiple+1)*width+j*mutiple+1] = gray_img[i*width+j];
+			enlarge_img[i*mutiple][j*mutiple] = gray_img[i*width+j];
+			enlarge_img[i*mutiple][j*mutiple+1] = gray_img[i*width+j];
+			enlarge_img[i*mutiple+1][j*mutiple] = gray_img[i*width+j];
+			enlarge_img[i*mutiple+1][j*mutiple+1] = gray_img[i*width+j];
+		}
+
+	for (unsigned int i=0; i<(width*mutiple); i++)
+		for (unsigned int j=0; j<(height*mutiple); j++) {
+			m_pEnlargeImg[i*width*mutiple+j] = enlarge_img[i][j];
+		}
+
+	return m_pEnlargeImg;
+}
+
+unsigned char * Imageprocess::Reduce(const unsigned char *gray_img, const int width, const int height,
+									 const unsigned char mutiple) {
+	unsigned int size;
+	size = (width/mutiple) * (height/mutiple);
+	m_pReduceImg = new unsigned char[size];
+	memset(m_pReduceImg, 0, size);
+
+	for (unsigned int i=0; i<width/2; i++)
+		for (unsigned int j=0; j<height/2; j++) {
+			m_pReduceImg[i*(width/2)+j] = gray_img[i*2*width + j*2];
+		}
+
+	return m_pReduceImg;
+}
 
 
 

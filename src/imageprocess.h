@@ -24,10 +24,17 @@ public:
 	int * GetHistGram(const unsigned char * gray_img);
 	int GetOSTUThreshold(int * HistGram);
 	unsigned char * GetBinaryzationedImgRawData(const unsigned char * gray_img, int Threshold);
-	void SaveAsBmpFile(unsigned char * RawData, const unsigned char type, const char * output_path);
+	void SaveAsBmpFile(unsigned char * RawData, const int width, const int height,
+					   const unsigned char type, const char * output_path);
 	unsigned char * NormalizedBoxFilter(const unsigned char * gray_img);
 	unsigned char * MiddleFilter(const unsigned char * gray_img);
 	unsigned char * SobelFilter(const unsigned char * gray_img);
+	unsigned char * LaplacianFilter(const unsigned char * gray_img);
+	unsigned char * GaussBlur(const unsigned char * gray_img);
+	unsigned char * Enlarge(const unsigned char * gray_img, const int width, const int height,
+							const unsigned char mutiple);
+	unsigned char * Reduce(const unsigned char *gray_img, const int width, const int height,
+						   const unsigned char mutiple);
 
 private:
 	unsigned char BubbleSort(unsigned char * number, unsigned int odd_n);
@@ -43,6 +50,10 @@ private:
 	unsigned char * m_pNormalizedBoxFilterImg;
 	unsigned char * m_pMiddleFilterImg;
 	unsigned char * m_pSobelFilterImg;
+	unsigned char * m_pLaplacianFilterImg;
+	unsigned char * m_pGaussBlurImg;
+	unsigned char * m_pEnlargeImg;
+	unsigned char * m_pReduceImg;
 	unsigned int m_nThreshold;
 	unsigned int m_nWidth;
 	unsigned int m_nHeight;

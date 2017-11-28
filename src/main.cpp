@@ -18,20 +18,40 @@ int main(int argc, char * argv[]) {
 	int * HistGram = imageprocess.GetHistGram(GrayData); 
 	int Threshold = imageprocess.GetOSTUThreshold(HistGram);
 	unsigned char * BinaryzationedData = imageprocess.GetBinaryzationedImgRawData(GrayData, Threshold);
-	imageprocess.SaveAsBmpFile(BinaryzationedData, 1, "../img/binarization_img.bmp");
+
+	imageprocess.SaveAsBmpFile(BinaryzationedData, 960, 960, 1, "../img/binarization_img.bmp");
 	cout << "save binarization_img sucessfully." << endl;
-	imageprocess.SaveAsBmpFile(GrayData, 8, "../img/gray_img.bmp");
+
+	imageprocess.SaveAsBmpFile(GrayData, 960, 960, 8, "../img/gray_img.bmp");
 	cout << "save gray_img sucessfully." << endl;
+
 	unsigned char * NormalizedBoxFilterData = imageprocess.NormalizedBoxFilter(GrayData);
-	imageprocess.SaveAsBmpFile(NormalizedBoxFilterData, 8, "../img/normalized_gray_img.bmp");
+	imageprocess.SaveAsBmpFile(NormalizedBoxFilterData, 960, 960, 8, "../img/normalized_gray_img.bmp");
 	cout << "save normalized_gray_img sucessfully." << endl;
+
 	unsigned char * MiddleFilterData = imageprocess.MiddleFilter(GrayData);
-	imageprocess.SaveAsBmpFile(MiddleFilterData, 8, "../img/middle_gray_img.bmp");
+	imageprocess.SaveAsBmpFile(MiddleFilterData, 960, 960, 8, "../img/middle_gray_img.bmp");
 	cout << "save middle_gray_img sucessfully." << endl;
+
 	unsigned char * SobelFilterData = imageprocess.SobelFilter(GrayData);
-	imageprocess.SaveAsBmpFile(SobelFilterData, 8, "../img/sobel_img.bmp");
+	imageprocess.SaveAsBmpFile(SobelFilterData, 960, 960, 8, "../img/sobel_img.bmp");
 	cout << "save sobel_img sucessfully." << endl;
 
+	unsigned char * LaplacianFilterData = imageprocess.LaplacianFilter(GrayData);
+	imageprocess.SaveAsBmpFile(LaplacianFilterData, 960, 960, 8, "../img/laplacian_img.bmp");
+	cout << "save laplacian_img sucessfully." << endl;
+
+	unsigned char * GaussBlurData = imageprocess.GaussBlur(GrayData);
+	imageprocess.SaveAsBmpFile(GaussBlurData, 960, 960, 8, "../img/gaussblur_img.bmp");
+	cout << "save gaussblur_img sucessfully." << endl;
+
+	unsigned char * EnlargeImg = imageprocess.Enlarge(GrayData, 960, 960, 2);
+	imageprocess.SaveAsBmpFile(EnlargeImg, 960*2, 960*2, 8, "../img/enlarge_img.bmp");
+	cout << "save enlarge_img suncessfully." << endl;
+
+	unsigned char * ReduceImg = imageprocess.Reduce(GrayData, 960, 960, 2);
+	imageprocess.SaveAsBmpFile(ReduceImg, 960/2, 960/2, 8, "../img/reduce_img.bmp");
+	cout << "save reduce_img suncessfully." << endl;
 
 #ifdef __DEBUG
 	cout << "size:  " << imageprocess.GetRawDataSize() << endl;
@@ -47,8 +67,8 @@ int main(int argc, char * argv[]) {
 #endif
 
 #ifdef __DEBUG_IMG
-	for (unsigned int i; i<2000; i++) {
-		printf("%d ", AverageFilterData[i]);
+	for (unsigned int i=1800*1800; i<1920*1920; i++) {
+		printf("%d ", EnlargeImg[i]);
 	}
 #endif
 
