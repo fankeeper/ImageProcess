@@ -1,4 +1,3 @@
-Thank you for reading this.
 
 ###folder introduction
 
